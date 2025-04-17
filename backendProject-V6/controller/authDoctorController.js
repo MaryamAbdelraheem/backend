@@ -21,18 +21,18 @@ exports.login = asyncHandler(async (req, res, next) => {
 
     const doctor = await Doctor.findOne({ where: { email } });
     if (!doctor) {
-        return res.status(401).json({ message: 'بيانات الاعتماد غير صحيحة' });
+        return res.status(401).json({ message: 'Invalid credentials' });
     }
 
     const isMatch = await bcrypt.compare(password, doctor.password);
     if (!isMatch) {
-        return res.status(401).json({ message: 'بيانات الاعتماد غير صحيحة' });
+        return res.status(401).json({ message: 'Invalid credentials' });
     }
 
     const token = generateToken(doctor, "doctor");
 
     res.status(200).json({
-        message: 'تم تسجيل الدخول بنجاح',
+        message: 'Logged in successfully',
         doctor: {
             doctorId: doctor.doctorId, // ✅ استخدم نفس الاسم اللي في الموديل
             firstName: doctor.firstName,
@@ -58,7 +58,7 @@ const tokenBlacklist = new Set();
 exports.logout = asyncHandler(async (req, res) => {
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
-        return res.status(401).json({ message: "لم يتم توفير التوكن" });
+        return res.status(401).json({ message: "Token not provided" });
     }
 
     const token = authHeader.split(" ")[1];
@@ -66,12 +66,12 @@ exports.logout = asyncHandler(async (req, res) => {
     try {
         jwt.verify(token, SECRET_KEY);
     } catch (error) {
-        return res.status(401).json({ message: "توكن غير صالح" });
+        return res.status(401).json({ message: "Token not provided" });
     }
 
     tokenBlacklist.add(token);
 
     res.status(200).json({
-        message: "تم تسجيل الخروج بنجاح"
+        message: "Logged out successfully"
     });
 });
