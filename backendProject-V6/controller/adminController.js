@@ -20,14 +20,14 @@ exports.login = asyncHandler(async (req, res, next) => {
 
     const admin = adminUser.find(user => user.email === email);
     if (!admin) {
-        return res.status(401).json({ message: 'بيانات الاعتماد غير صحيحة' });
+        return res.status(401).json({ message: 'Invalid credentials' });
     }
 
     // التحقق من صحة كلمة المرور بعد إزالة المسافات البيضاء
     const isMatch = await bcrypt.compare(password.trim(), admin.password);
 
     if (!isMatch) {
-        return res.status(401).json({ message: 'بيانات الاعتماد غير صحيحة' });
+        return res.status(401).json({ message: 'Invalid credentials' });
     }
 
     // إنشاء رمز JWT
@@ -39,7 +39,7 @@ exports.login = asyncHandler(async (req, res, next) => {
 
     // إرسال الاستجابة إلى العميل
     res.status(200).json({
-        message: 'تم تسجيل الدخول بنجاح',
+        message: 'Logged in successfully',
         admin: adminData,
         token,
     });
